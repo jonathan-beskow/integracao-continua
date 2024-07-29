@@ -1,0 +1,25 @@
+{
+  "name": "simple-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "supertest": "^7.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-sonar-reporter": "^2.0.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": ["lcov", "text"],
+    "testResultsProcessor": "jest-sonar-reporter"
+  }
+}
