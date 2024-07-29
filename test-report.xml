@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\j.beskow\Desktop\FullCycle\INTEGRACAO\simple-app\tests\app.test.js">
-    <testCase name="GET / should return Hello World!!" duration="24"/>
+    <testCase name="GET / should return Hello World!!" duration="23"/>
   </file>
 </testExecutions>
