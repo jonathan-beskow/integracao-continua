@@ -20,7 +20,9 @@ jobs:
       run: npm install
 
     - name: Add `node_modules/.bin` to PATH
-      run: echo "::add-path::$(npm bin)"
+      run: |
+        echo "NODE_MODULES_BIN=$(npm bin)" >> $GITHUB_ENV
+        echo "$NODE_MODULES_BIN" >> $GITHUB_PATH
 
     - name: Run tests
       run: npm test
