@@ -32,14 +32,14 @@ jobs:
         distribution: 'temurin'
 
     - name: Install SonarScanner CLI
-      run: npm install -g sonarqube-scanner
+      run: npm install -g sonar-scanner
 
     - name: Run SonarCloud Scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       run: |
-        sonarqube-scanner \
+        sonar-scanner \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
           -Dsonar.organization=my-organization \
           -Dsonar.sources=. \
