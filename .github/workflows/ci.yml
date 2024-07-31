@@ -40,7 +40,7 @@ jobs:
         SONAR_PROJECT_KEY: jonathan-beskow_integracao-continua
         SONAR_ORG: jonathan-beskow
       run: |
-        sonar-scanner \
+        sonar-scanner -X \
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
           -Dsonar.organization=${{ env.SONAR_ORG }} \
           -Dsonar.sources=. \
