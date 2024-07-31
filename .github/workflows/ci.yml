@@ -34,15 +34,17 @@ jobs:
     - name: Install SonarScanner CLI
       run: npm install -g sonar-scanner
 
-    - name: Run SonarCloud Scan
+    - name: Run SonarCloud Scan with retries
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_PROJECT_KEY: jonathan-beskow_integracao-continua
         SONAR_ORG: jonathan-beskow
       run: |
-        sonar-scanner -X \
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
-          -Dsonar.organization=${{ env.SONAR_ORG }} \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        for i in {1..3}; do
+          sonar-scanner -X \
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ env.SONAR_ORG }} \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} && break || sleep 30;
+        done
