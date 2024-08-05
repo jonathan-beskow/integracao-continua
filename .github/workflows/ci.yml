@@ -48,6 +48,9 @@ jobs:
           sonar-scanner -X && break || sleep 30;
         done
 
+    - name: Wait for SonarCloud processing
+      run: sleep 60
+
     - name: SonarCloud Quality Gate
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
