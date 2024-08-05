@@ -19,6 +19,9 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Verify Node.js version
+      run: node -v
+
     - name: Fix permissions for jest
       run: chmod +x ./node_modules/.bin/jest
 
@@ -30,6 +33,9 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+
+    - name: Verify JDK version
+      run: java -version
 
     - name: Install SonarScanner CLI
       run: npm install -g sonar-scanner
@@ -48,3 +54,13 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} && break || sleep 30;
         done
+
+    - name: SonarCloud Quality Gate
+      run: |
+        STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ env.SONAR_PROJECT_KEY }}" | jq -r .projectStatus.status)
+        if [ "$STATUS" != "OK" ]; then
+          echo "Quality gate failed: $STATUS"
+          exit 1
+        else
+          echo "Quality gate passed: $STATUS"
+        fi
