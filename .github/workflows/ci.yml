@@ -43,21 +43,18 @@ jobs:
     - name: Run SonarCloud Scan with retries
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_PROJECT_KEY: jonathan-beskow_integracao-continua
-        SONAR_ORG: jonathan-beskow
       run: |
         for i in {1..3}; do
-          sonar-scanner -X \
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=${{ env.SONAR_ORG }} \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} && break || sleep 30;
+          sonar-scanner -X && break || sleep 30;
         done
 
     - name: SonarCloud Quality Gate
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ env.SONAR_PROJECT_KEY }}" | jq -r .projectStatus.status)
+        RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/qualitygates/project_status?projectKey=jonathan-beskow_integracao-continua")
+        echo "API Response: $RESPONSE"
+        STATUS=$(echo $RESPONSE | jq -r .projectStatus.status)
         if [ "$STATUS" != "OK" ]; then
           echo "Quality gate failed: $STATUS"
           exit 1
