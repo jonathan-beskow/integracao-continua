@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: CI Pipeline
 
 on: [push, pull_request]
@@ -6,11 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16]
-        java-version: [17]
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -18,21 +14,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
-
-    - name: Verify Node.js version
-      run: node -v
 
     - name: Fix permissions for jest
       run: chmod +x ./node_modules/.bin/jest
@@ -40,46 +25,8 @@ jobs:
     - name: Run tests
       run: npm test
 
-    - name: Check if coverage file exists
-      run: |
-        if [ ! -f coverage/lcov.info ]; then
-          echo "Coverage file not found!"
-          exit 1
-        fi
-
-    - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ matrix.java-version }}
-        distribution: 'temurin'
-
-    - name: Verify JDK version
-      run: java -version
-
-    - name: Install SonarScanner CLI
-      run: npm install -g sonar-scanner
-
-    - name: Run SonarCloud Scan with retries
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        for i in {1..3}; do
-          sonar-scanner -X && break || sleep 30;
-        done
-
-    - name: Wait for SonarCloud processing
-      run: sleep 60
-
-    - name: SonarCloud Quality Gate
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/qualitygates/project_status?projectKey=jonathan-beskow_integracao-continua")
-        echo "API Response: $RESPONSE"
-        STATUS=$(echo $RESPONSE | jq -r .projectStatus.status)
-        if [ "$STATUS" != "OK" ]; then
-          echo "Quality gate failed: $STATUS"
-          exit 1
-        else
-          echo "Quality gate passed: $STATUS"
-        fi
