@@ -1,7 +1,10 @@
 # .github/workflows/ci.yml
 name: CI Pipeline
 
-on: [push, pull_request]
+on: 
+  pull_request:
+    branches:
+      - novabranch
 
 jobs:
   build:
